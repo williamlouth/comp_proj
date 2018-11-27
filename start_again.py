@@ -41,20 +41,17 @@ def derivatives_maker(input_array):
 def imag_point_maker(input_array):
     m = np.shape(input_array)[0]
     n = np.shape(input_array)[1]
-    for i in range(2,m-2):
-        input_array[i][1] = input_array[i][3] - 2*dist*input_array[i][0]
-        input_array[i][n-2] = input_array[i][n-4] - 2*dist*input_array[i][n-1]
-        
-    for j in range(2,n-2):
-        input_array[1][j] = input_array[3][j] - 2*dist*input_array[0][j]
-        input_array[m-2][j] = input_array[m-4][j] - 2*dist*input_array[m-1][j]
+    input_array[2:m-2,1] = input_array[2:m-2,3] - 2*dist*input_array[2:m-2,0]
+    input_array[2:m-2,n-2] = input_array[2:m-2,n-4] - 2*dist*input_array[2:m-2,n-1]
+    input_array[1,2:n-2] = input_array[3,2:n-2] - 2*dist*input_array[0,2:n-2]
+    input_array[m-2,2:n-2] = input_array[m-4,2:n-2] - 2*dist*input_array[m-1,2:n-2]   
     return input_array
     
 
 
-a = np.ones((8,8))*20
+a = np.ones((8,8))*40
 a[3,3] = 30
-a[3,4] = 20
+a[3,4] = 40
 print("a")
 print(a)
 b = solver(a)
@@ -68,11 +65,12 @@ d = imag_point_maker(c)
 print("d")
 print(d)
 
-for i in range(150000):
-    b = solver(b)
+for i in range(50000):
+    for j in range(5):
+        b = solver(b)
     b = derivatives_maker(b)
     b = imag_point_maker(b)
-print("hi")
+print("end")
 print(b)
 print("out")
 print(b[2:np.shape(b)[0]-2,2:np.shape(b)[1]-2])
