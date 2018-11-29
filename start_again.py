@@ -1,6 +1,7 @@
 import numpy as np
 import copy
 from numba import jit
+import time
 
 np.set_printoptions(precision = 5,suppress = True)
 
@@ -13,13 +14,11 @@ dist = (1/multiple)*10**(-3)
 p = 0.5*10**9
 
 
-@jit
+@jit(nopython = True,parallel = True)
 def solver(input_array):
-    """change to gauss siedel  = jacobi but update input matrix after each point"""
-    
-    m = np.shape(input_array)[0]
-    n = np.shape(input_array)[1]
-    #output_array = copy.copy(input_array)
+
+    m = input_array.shape[0]
+    n = input_array.shape[1]
     for i in range(2,m-2):
         for j in range(2,n-2):
             input_array[i][j] = 0.25*(input_array[i-1][j]+input_array[i+1][j]+input_array[i][j+1]+input_array[i][j-1]+dist**2*p*(1/kappa))
@@ -87,10 +86,11 @@ b = np.ones((length+4,width+4))*40
     #b = solver(b)
     
     
+start = time.time()
 before = 1
 after = 1
 error = 100
-while np.abs(error) > 1e-7:
+while np.abs(error) > 1e-14:
     m = np.shape(b)[0]
     n = np.shape(b)[1]
     before = copy.copy(after)
@@ -101,12 +101,13 @@ while np.abs(error) > 1e-7:
     error = (after-before)/before
     print(error)
     
+end = time.time()
 
 print("end")
 print(b)
 print("out")
 print(b[2:np.shape(b)[0]-2,2:np.shape(b)[1]-2])
-
+print("time",end-start)
 
 
 
