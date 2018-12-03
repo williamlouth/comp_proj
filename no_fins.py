@@ -2,10 +2,14 @@ import numpy as np
 import copy
 from numba import jit
 import time
+import pylab as pl
+
 
 np.set_printoptions(precision = 5,suppress = True)
 
-iterations = 200
+#iterations = 20000
+stop_error = 1e-14
+omega = 1.75
 multiple = 2
 Ta = 20
 
@@ -13,6 +17,7 @@ Ta = 20
 
 kappa_micro = 150
 kappa_ceramic = 230
+#kappa_ceramic = 1
 kappa_heat_sink = 248
 dist = (1/multiple)*10**(-3)
 p = 0.5*10**9
@@ -28,14 +33,13 @@ print(height_b,width_b)
 print(height_c,width_c)
 
 
-@jit(nopython = True,parallel = True)
+@jit(nopython = True)
 def solver(input_array,tot_power):
-
     m = input_array.shape[0]
     n = input_array.shape[1]
     for i in range(1,m-1):
         for j in range(1,n-1):
-            input_array[i][j] = 0.25*(input_array[i-1][j]+input_array[i+1][j]+input_array[i][j+1]+input_array[i][j-1]+dist**2*tot_power*(1/kappa_micro))
+            input_array[i][j] = input_array[i][j]*(1-omega) + omega*0.25*(input_array[i-1][j]+input_array[i+1][j]+input_array[i][j+1]+input_array[i][j-1]+dist**2*tot_power*(1/kappa_micro))
             #input_array[i][j] = 0.25*(input_array[i-1][j]+input_array[i+1][j]+input_array[i][j+1]+input_array[i][j-1])
     #input_array[2:m-2,2:n-2] = 0.25*(np.roll(input_array,1)+np.roll(input_array,-1)+
     #                     np.roll(input_array,1,axis = 0)+np.roll(input_array,-1,axis = 0)+dist**2*p*(1/kappa)*np.ones((m,n)))[2:m-2,2:n-2]        
@@ -43,7 +47,8 @@ def solver(input_array,tot_power):
     
 
 
-@jit(nopython = True,parallel = True)
+#@jit(nopython = True,parallel = True)
+@jit(nopython = True)#dont use parallel
 def derivatives_maker(input_array,left,right,kappa):
     m = input_array.shape[0]
     n = input_array.shape[1]
@@ -94,25 +99,27 @@ def derivatives_maker(input_array,left,right,kappa):
 #    input_array[m-2,2:n-2] = input_array[m-4,2:n-2] - 2*dist*input_array[m-1,2:n-2]   
 #    return input_array
     
-
+@jit(nopython = True)
 def run_block_a(a):
     #print(a)
     a = derivatives_maker(a,(a.shape[1])/2+1,(a.shape[1])/2+1,kappa_micro)
     #print(a)
     a = solver(a,p)
-    return a
+    return 
+@jit(nopython = True)
 def run_block_b(b):
     b = derivatives_maker(b,(width_b-width_a)/2,(width_b-width_a)/2,kappa_ceramic)
     b = solver(b,0)
     #print(b.shape)
-    return b
+    return 
+@jit(nopython = True)
 def run_block_c(c):
     c = derivatives_maker(c,(width_c-width_b)/2,(width_c-width_b)/2,kappa_heat_sink)
     #need to add top derivatives
     c[0,1:width_c-1] =c[2,1:width_c-1] - 2*dist*1.31 * (c[1,1:width_c-1] - Ta)**(4/3)/kappa_heat_sink
     c = solver(c,0)
     #print(c.shape)
-    return c
+    return 
 
 
 
@@ -121,16 +128,30 @@ def my_running(input_array):
     
     m = np.shape(input_array)[0]
     n = np.shape(input_array)[1]
-    for i in range(iterations):
+    before = 100.0
+    after = 100.0
+    error = 1.0
+    print("here")
+    #for i in range(iterations):
+    while np.abs(error) > stop_error: 
+        before = copy.copy(after)
         run_block_a(input_array[m-height_a-2:m,int((n-width_a)/2):int((n+width_a)/2)])#include 1 row of b
         #run_block_a(input_array[int((n-width_a)/2):int((n+width_a)/2),m-height_a-2:m])#include 1 row of b
         run_block_b(input_array[m-height_a - height_b-2:m-height_a,int((n-width_b)/2):int((n+width_b)/2)]) 
         run_block_c(input_array[0:height_c+2,int((n-width_c)/2):int((n+width_c)/2)]) #include 1 row of b
-
+        after = np.sum(input_array)
+        error = (after-before)/before
+        print(error)
+    print("finished computing")
     return input_array
 
 test = np.ones((height_a+height_b+height_c+2,width_c))*20
+start = time.time()
 bob = my_running(test)
+end = time.time()
+print("time",end-start)
+
+
 #b = np.ones((length+4,width+4))*40
 #print("b")
 #print(b)
@@ -143,8 +164,8 @@ bob = my_running(test)
 #print(d)
 
 np.savetxt('out.txt',bob,delimiter = ',')
-
-
+pl.imshow(bob, cmap='hot', interpolation='nearest')
+pl.show()
 
 
 #a[3,3] = 30
