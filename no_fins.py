@@ -8,7 +8,7 @@ import pylab as pl
 np.set_printoptions(precision = 5,suppress = True)
 
 #iterations = 20000
-stop_error = 1e-14
+stop_error = 1e-11
 omega = 1.75
 multiple = 2
 Ta = 20
@@ -19,6 +19,7 @@ kappa_micro = 150
 kappa_ceramic = 230
 #kappa_ceramic = 1
 kappa_heat_sink = 248
+#kappa_heat_sink = 5
 dist = (1/multiple)*10**(-3)
 p = 0.5*10**9
 
@@ -131,7 +132,7 @@ def my_running(input_array):
     before = 100.0
     after = 100.0
     error = 1.0
-    print("here")
+    print("starting computing")
     #for i in range(iterations):
     while np.abs(error) > stop_error: 
         before = copy.copy(after)
