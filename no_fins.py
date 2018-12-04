@@ -165,7 +165,7 @@ print("time",end-start)
 #print(d)
 
 np.savetxt('out.txt',bob,delimiter = ',')
-pl.imshow(bob, cmap='hot', interpolation='nearest')
+pl.imshow(bob, cmap='hot', interpolation='nearest',vmin = np.max(bob)-50)
 pl.show()
 
 
