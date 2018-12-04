@@ -1,7 +1,90 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Tue Dec  4 15:23:02 2018
+import numpy as np
+import copy
+from numba import jit
+import time
+import pylab as pl
 
-@author: wpl16
-"""
+
+
+
+
+class block(self):
+    
+    points = np.array((width,height))    
+    shape = points.shape
+    kappa = 
+    boundary = 
+    #need to store location of object that holds other temps
+    
+    
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
