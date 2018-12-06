@@ -101,7 +101,7 @@ hfmm = 30
 sfmm = 2
 number_f = 5
 
-stop_error = 1e-6
+stop_error = 5e-5
 
 width_f = wfmm*multiple
 height_f = hfmm*multiple
