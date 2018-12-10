@@ -130,12 +130,10 @@ width_a = multiple*14
 height_b = multiple*2
 width_b = multiple*20
 
-wfmm = 2
-hfmm = 60
+wfmm = 1
+hfmm = 70
 sfmm = 2
-number_f = 25
-
-stop_error = 5e-5
+number_f = 30
 
 width_f = wfmm*multiple
 height_f = hfmm*multiple
@@ -143,9 +141,20 @@ seperation_f = sfmm*multiple
 
 height_c = multiple*4
 width_c = (width_f * number_f) + (seperation_f*(number_f-1))
+
+if width_c<width_b:
+    print("error width c < width b")
+    quit()
+
 print(height_a,width_a)
 print(height_b,width_b)
 print(height_c,width_c)
+
+
+stop_error = 1e-8
+stop_error = (1e-7/4014) *((height_a*width_a)+(height_b*width_b)+(height_c*width_c))
+print("stop error" , stop_error)
+
 
 a = block(np.pad(np.ones((height_a,width_a)),1,mode = 'constant',constant_values = 0)*30,150,p,dist)
 b = block(np.pad(np.ones((height_b,width_b)),1,mode = 'constant',constant_values = 0)*30,230,0,dist)
@@ -202,9 +211,7 @@ def one_iteration():
     edge_maker(c.points,c.m,c.n,c.dist,c.kappa,c.top_type,c.bot_type,([x.points[1,:]for x in c.other_blocks[1:]]),([x.points[-2,:]for x in c.other_blocks[1:]]))
     solver(c.points,c.tot_power,c.kappa,c.dist)
         #c.solver(omega)
-    fin_func()
         
-def fin_func():
     for i in list_of_fins:
             #i.edge_maker()
         edge_maker(i.points,i.m,i.n,i.dist,i.kappa,i.top_type,i.bot_type,([x.points[1,:]for x in i.other_blocks[1:]]),([x.points[-2,:]for x in i.other_blocks[1:]]))
@@ -239,14 +246,22 @@ def running_func():
     #        solver(i.points,i.tot_power,i.kappa,i.dist)
             #i.solver(omega)
     
+    i = 1
     while np.abs(error) > stop_error:
         before = copy.copy(after)
+        i+=1
+        if(i>1000):
+            i=1
+            print(error)
         #a.edge_maker()
                     #i.solver(omega)
         one_iteration()
         after = np.sum(a.points)+np.sum(b.points)+np.sum(c.points)
         error = (after-before)/before
-        print(error)
+        #print(error)
+
+    print("error",error)
+
 running_func()
 end = time.time()
 print("computing finished")
