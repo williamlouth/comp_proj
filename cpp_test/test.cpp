@@ -28,7 +28,7 @@ int main()
 
 	std::cout << "bill";
 	double multiple = 3;
-	double dist = (1/multiple)*pow(10,-3);
+	double dist = (1.0/multiple)*pow(10,-3);
 	double p = 0.5*pow(10,9);
 	
 	int height_a =multiple;
@@ -36,7 +36,7 @@ int main()
 	int height_b = multiple*2;
 	int width_b = multiple*20;
 	
-	int wfmm = 1;
+	int wfmm = 2;
 	int hfmm = 30;
 	int sfmm = 8;
 	int number_f = 5;
@@ -85,8 +85,8 @@ int main()
 	c->type_change(b,0,1,width_b,int((width_c-width_b)/2)+1,int((width_c+width_b)/2));
 	for(int i = 0; i<number_f;i++)
 	{
-	    	fins_vector[i]->type_change(c,0,(width_f+seperation_f)*i,((width_f+seperation_f)*i)+width_f-1,1,width_f-2);
-	   c->type_change(fins_vector[i],1,1,width_f,(width_f+seperation_f)*i+1,(width_f+seperation_f)*(i)+width_f-1);
+	    	fins_vector[i]->type_change(c,0,1+(width_f+seperation_f)*i,((width_f+seperation_f)*i)+width_f,1,width_f);
+	        c->type_change(fins_vector[i],1,1,width_f,(width_f+seperation_f)*i+1,(width_f+seperation_f)*(i)+width_f);
 	}
 
 
@@ -99,7 +99,9 @@ int main()
 	//c->type_change(b,0,0,28,1,29);
 	
 	double stop_error = 5.0/pow(10,8);
-	stop_error = (1e-7/4014)*((height_a*width_a)+(height_b*width_b)+(height_c*width_c));
+	stop_error = 1e-5;
+	//stop_error = (1e-7/4014)*((height_a*width_a)+(height_b*width_b)+(height_c*width_c));
+	//stop_error = (1e-7/1e2)*(height_a*width_a);
 	std::cout << stop_error;
 	double before = 10000000000;
 	long double after  = 10000000000;
@@ -107,12 +109,12 @@ int main()
 
 	//for(int i = 0;i<1;i++)
 
-
-	std::cout << "here";
-	for(int i=0;i<0;i++)
+	int count_2 =0;
+	for(int i=0;i<100000;i++)
 	{
+		count_2 +=1;
 		//std::cout << a->points[4][1]<< "\n";
-		//std::cout << i<< "\n";
+		std::cout << i<< "\n";
 		before = after;
 		a->edge_maker();
 		a->solver();
@@ -123,7 +125,7 @@ int main()
 		std::cout << i<< "\n";
 		c->edge_maker();
 		c->solver();
-		for(int j=0;j<number_f;j++)
+		for(int j=0;j<fins_vector.size();j++)
 		{
 			fins_vector[j]->edge_maker();
 			fins_vector[j]->solver();
@@ -136,9 +138,11 @@ int main()
 	int console_count = 0;
 	std::clock_t start;
 	start = std::clock();
-	while(std::abs(error) > stop_error)
-	//for(int i=0;i<10;i++)
+	int the_count = 0;
+	//while(std::abs(error) > stop_error)
+	for(int i=0;i<0;i++)
 	{
+		the_count +=1;
 		if(console_count > 1000)
 		{
 			console_count = 0;
@@ -161,17 +165,28 @@ int main()
 
 		after=0;
 		//for(int i=0;i<block_vector.size();i++)
-		for(int i=0;i<2;i++)
+		for(int i=0;i<3;i++)
 		{
 			for(int j=1;j<block_vector[i]->height-1;j++)
 			{
 				for(int k=1;k<block_vector[i]->width-1;k++)
 				{
 					after += block_vector[i]->points[j][k];
-					//sum += a->points[j][k];
+					//after += a->points[j][k];
 				}
 			}
 		}
+			
+		/*{
+			for(int j=1;j<a->height-1;j++)
+			{
+				for(int k=1;k<a->width-1;k++)
+				{
+					//after += block_vector[i]->points[j][k];
+					after += a->points[j][k];
+				}
+			}
+		}*/
 		error = std::abs(after-before)/before;
 	}
 
@@ -225,13 +240,49 @@ int main()
 		myfilec<< '\n';
 	}
 	myfilec.close();
+
+	std::ofstream myfilef1;
+	myfilef1.open("f1.csv");
+	for(int i = 0;i<height_f+2;i++)
+	{
+		for(int j=0;j<width_f+2;j++)
+		{
+			myfilef1 << block_vector[3]->points[i][j] <<",";
+		}
+		myfilef1<< '\n';
+	}
+	myfilef1.close();
+
+	std::ofstream myfilef2;
+	myfilef2.open("f2.csv");
+	for(int i = 0;i<height_f+2;i++)
+	{
+		for(int j=0;j<width_f+2;j++)
+		{
+			myfilef2 << block_vector[4]->points[i][j] <<",";
+		}
+		myfilef2<< '\n';
+	}
+	myfilef2.close();
 	
-	long double kappa = 150;
-	long double Ta = 20;
+
 	//std::cout << a->points[1,2] - 2*dist*1.31*pow(a->points[1,1]-Ta,4/3)/kappa;
 	//std::cout << "\n" <<"hehehehe" <<  a->points[1][2]- 2*dist*1.31*pow(a->points[1][1]-Ta,4.0/3)/kappa << "\n" ;
 	//std::cout << "\n" <<"hehehehe" <<  pow((a->points[1][1]-Ta),4.0/3) << "\n" ;
 	//std::cout << "\n" <<"hehehehe" <<  a->points[1][1]-Ta << "\n" ;
+	//std::cout << "here";
+	//std::cout << "\n" << block_vector[3]->bot_type[0]->position;
+	//std::cout << "\n" << block_vector[3]->bot_type[1]->position;
+	//std::cout << "\n" << block_vector[3]->bot_type[2]->position;
+	
+	//std::cout << "\n" << block_vector[3]->bot_type[0]->block_reference->points[1][1];
+	//std::cout << "\n" << block_vector[3]->bot_type[1]->block_reference->points[1][1];
+	//std::cout << "\n" << block_vector[3]->bot_type[2]->block_reference->points[1][1];
+	
+	//std::cout << "\n \n" << c->points[1][1];
+	//std::cout << "\n" << block_vector[3]->points[7][1];
+	std::cout << "\n" <<"count_2 " << count_2;
+
 	return 0;
 }
 

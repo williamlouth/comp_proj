@@ -142,12 +142,12 @@ void block::edge_maker()
 		if(bot_type[j-1]->block_reference == this)
 		{
 			
-			points[height-1][j] = points[height-3][j] - 2*dist*1.31*pow((points[height-2][j] - Ta),4.0/3.0)/kappa;
-
+			points[height-1][j] = points[height-3][j] - 2.0*dist*1.31*pow((points[height-2][j] - Ta),4.0/3.0)/kappa;
 		}		
 		else
 		{
 			points[height-1][j] = bot_type[j-1]->block_reference->points[1][bot_type[j-1]->position];
+			//std::cout << "hi" << bot_type[j-1]->block_reference->points[1][1] << "\n";
 		}
 	}
 }

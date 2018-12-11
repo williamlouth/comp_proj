@@ -41,7 +41,9 @@ def edge_maker(points,m,n,dist,kappa,top_type,bot_type,list_of_edges_top,list_of
 
     points[m-1,1:n-1] = [points[m-3,a] - 2*dist*1.31*(np.abs(points[m-2,a]-Ta))**(4/3)/kappa if bot_type[0,a] == 0 else list_of_edges_top[int(bot_type[0][a])-1][int(bot_type[1][a])] for a in range(1,n-1)]
 
-
+#    points[0,1:n-1] = [points[2,a] - 2*dist*1.31*(np.abs(points[1,a]-Ta))**(4/3)/kappa  for a in range(1,n-1)]
+#
+#    points[m-1,1:n-1] = [points[m-3,a] - 2*dist*1.31*(np.abs(points[m-2,a]-Ta))**(4/3)/kappa  for a in range(1,n-1)]
     #for j in range(1,n-1):
     #    if top_type[0][j] == 0:
     #        points[0,j] = points[2,j] - 2*dist*1.31*(np.abs(points[1,j]-Ta))**(4/3)/kappa
@@ -63,7 +65,7 @@ class block:
     def __init__(self,initial_array,kappa,tot_power,dist):
         #print("here")
         #self.points = np.pad(initial_array,1,mode = 'constant',constant_values = 0)
-        self.points = initial_array
+        self.points = np.array(initial_array,dtype = np.float64)
         self.m = self.points.shape[0]
         self.n = self.points.shape[1]
 
@@ -121,8 +123,8 @@ class block:
     
 
 
-multiple = 3    
-dist = (1/multiple)*10**(-3)
+multiple = 3
+dist = (1.0/multiple)*10**(-3)
 p = 0.5*10**9
 
 height_a =copy.copy(multiple)
@@ -130,7 +132,7 @@ width_a = multiple*14
 height_b = multiple*2
 width_b = multiple*20
 
-wfmm = 1
+wfmm = 2
 hfmm = 30
 sfmm = 8
 number_f = 5
@@ -151,8 +153,9 @@ print(height_b,width_b)
 print(height_c,width_c)
 
 
-stop_error = 1e-8
-stop_error = (1e-7/4014) *((height_a*width_a)+(height_b*width_b)+(height_c*width_c))
+stop_error = 1e-5
+#stop_error = (1e-7/4014) *((height_a*width_a)+(height_b*width_b)+(height_c*width_c))
+#stop_error = (1e-7)/(1e2) *((height_a*width_a))
 print("stop error" , stop_error)
 
 
@@ -188,7 +191,7 @@ b.type_change(a,1,a.n-2,int((b.n-a.n)/2)+1,int((b.n+a.n)/2)-2,"bot")
 b.type_change(c,int((c.n-b.n)/2)+1,int((c.n+b.n)/2)-2,1,b.n-2,"top")
 c.type_change(b,1,b.n-2,int((c.n-b.n)/2)+1,int((c.n+b.n)/2)-2,"bot")
 for i in range(len(list_of_fins)):
-    list_of_fins[i].type_change(c,(width_f+seperation_f)*i,((width_f+seperation_f)*i)+width_f-1,1,list_of_fins[i].n-2,"bot")
+    list_of_fins[i].type_change(c,1+(width_f+seperation_f)*i,((width_f+seperation_f)*i)+width_f,1,list_of_fins[i].n-2,"bot")
     c.type_change(list_of_fins[i],1,list_of_fins[i].n-2,(width_f+seperation_f)*i,(width_f+seperation_f)*(i)+width_f-1,"top")
 #print("b")
 #print(b.points)
@@ -202,6 +205,8 @@ print("starting computing")
 
 def one_iteration():
     edge_maker(a.points,a.m,a.n,a.dist,a.kappa,a.top_type,a.bot_type,([x.points[1,:]for x in a.other_blocks[1:]]),([x.points[-2,:]for x in a.other_blocks[1:]]))
+#    edge_maker(a.points,a.m,a.n,a.dist,a.kappa,a.top_type,a.bot_type,[0],[0])
+    
     solver(a.points,a.tot_power,a.kappa,a.dist)
 
     edge_maker(b.points,b.m,b.n,b.dist,b.kappa,b.top_type,b.bot_type,([x.points[1,:]for x in b.other_blocks[1:]]),([x.points[-2,:]for x in b.other_blocks[1:]]))
@@ -220,15 +225,15 @@ def one_iteration():
 
 
 
-
 def running_func():
     before = 1
     after = 1
     error = 1
-
+    the_count = 0
     for i in range(1000):
         one_iteration()
         print(i)
+        the_count +=1
         #a.edge_maker()
         #edge_maker(a.points,a.m,a.n,a.dist,a.kappa,a.top_type,a.bot_type,[np.append(x.points[1,:]+x.points[-2,:] ) for x in a.other_blocks])
         #solver(a.points,a.tot_power,a.kappa,a.dist)
@@ -247,20 +252,25 @@ def running_func():
         #    solver(i.points,i.tot_power,i.kappa,i.dist)
         #   #i.solver(omega)
     
-    i = 1
-    while np.abs(error) > stop_error:
-        before = copy.copy(after)
-        i+=1
-        if(i>1000):
-            i=1
-            print(error)
-        #a.edge_maker()
-                    #i.solver(omega)
-        one_iteration()
-        after = np.sum(a.points[1:-1,1:-1])+np.sum(b.points[1:-1,1:-1])+np.sum(c.points[1:-1,1:-1])
-        error = (after-before)/before
+# =============================================================================
+#     i = 1
+#     the_count = 0
+#     while np.abs(error) > stop_error:
+#         the_count +=1
+#         before = copy.copy(after)
+#         i+=1
+#         if(i>1000):
+#             i=1
+#             print(error)
+#         #a.edge_maker()
+#                     #i.solver(omega)
+#         one_iteration()
+#         after = np.sum(a.points[1:-1,1:-1])+np.sum(b.points[1:-1,1:-1])+np.sum(c.points[1:-1,1:-1])
+# #        after = np.sum(a.points[1:-1,1:-1])
+#         error = (after-before)/before
+# =============================================================================
         #print(error)
-
+    print("the count", the_count)
     print("error",error)
 
 running_func()
@@ -286,6 +296,7 @@ for i in range(len(list_of_fins)):
 output[height_f:height_f+height_c,:] = c.points[1:c.m-1,1:c.n-1]
 output[height_f+height_c:height_f+height_c+height_b,int((c.n-b.n)/2)+1:int((c.n+b.n)/2)-1] = b.points[1:b.m-1,1:b.n-1]
 output[-height_a:,int((c.n-a.n)/2)+1:int((c.n+a.n)/2)-1] = a.points[1:a.m-1,1:a.n-1]
+#output = a.points[1:a.m-1,1:a.n-1]
 print(output)
 print("max temp",np.max(a.points))
 output = np.ma.masked_where(output <20,output)
@@ -293,4 +304,13 @@ pl.figure(1)
 heatmap = pl.imshow(output)
 pl.show()
 pl.imsave('heatmap.png',output)
+print(a.points.shape)
+print(b.points.shape)
+print(c.points.shape)
+print(width_c)
+
+np.savetxt("a.csv", a.points, delimiter=",")
+np.savetxt("b.csv", b.points, delimiter=",")
+np.savetxt("c.csv", c.points, delimiter=",")
+np.savetxt("f1.csv", list_of_fins[0].points, delimiter=",")
 
