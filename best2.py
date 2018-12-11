@@ -18,7 +18,7 @@ np.set_printoptions(precision = 5,suppress = True)
 print(numba.__version__)
 
 Ta = 20
-omega = 1.75
+omega = 1.2
 
 @jit(nopython = True)
 def solver(input_array,tot_power,kappa,dist):
@@ -131,9 +131,9 @@ height_b = multiple*2
 width_b = multiple*20
 
 wfmm = 1
-hfmm = 70
-sfmm = 2
-number_f = 30
+hfmm = 30
+sfmm = 8
+number_f = 5
 
 width_f = wfmm*multiple
 height_f = hfmm*multiple
@@ -156,6 +156,7 @@ stop_error = (1e-7/4014) *((height_a*width_a)+(height_b*width_b)+(height_c*width
 print("stop error" , stop_error)
 
 
+#a = block(np.pad(np.ones((height_a,width_a)),1,mode = 'constant',constant_values = 0)*30,150,0,dist)
 a = block(np.pad(np.ones((height_a,width_a)),1,mode = 'constant',constant_values = 0)*30,150,p,dist)
 b = block(np.pad(np.ones((height_b,width_b)),1,mode = 'constant',constant_values = 0)*30,230,0,dist)
 c = block(np.pad(np.ones((height_c,width_c)),1,mode = 'constant',constant_values = 0)*30,248,0,dist)
@@ -228,23 +229,23 @@ def running_func():
     for i in range(1000):
         one_iteration()
         print(i)
-    #    #a.edge_maker()
-    #    edge_maker(a.points,a.m,a.n,a.dist,a.kappa,a.top_type,a.bot_type,[np.append(x.points[1,:]+x.points[-2,:] ) for x in a.other_blocks])
-    #    solver(a.points,a.tot_power,a.kappa,a.dist)
-    #    #a.solver(omega)
-    #
-    #    b.edge_maker()
-    #    solver(b.points,b.tot_power,b.kappa,b.dist)
-    #    #a.solver(omega)
-    #    
-    #    c.edge_maker()
-    #    solver(c.points,c.tot_power,c.kappa,c.dist)
-    #    #c.solver(omega)
-    #    
-    #    for i in list_of_fins:
-    #        i.edge_maker()
-    #        solver(i.points,i.tot_power,i.kappa,i.dist)
-            #i.solver(omega)
+        #a.edge_maker()
+        #edge_maker(a.points,a.m,a.n,a.dist,a.kappa,a.top_type,a.bot_type,[np.append(x.points[1,:]+x.points[-2,:] ) for x in a.other_blocks])
+        #solver(a.points,a.tot_power,a.kappa,a.dist)
+        ##a.solver(omega)
+    
+        #b.edge_maker()
+        #solver(b.points,b.tot_power,b.kappa,b.dist)
+        ##a.solver(omega)
+        #
+        #c.edge_maker()
+        #solver(c.points,c.tot_power,c.kappa,c.dist)
+        ##c.solver(omega)
+        #
+        #for i in list_of_fins:
+        #    i.edge_maker()
+        #    solver(i.points,i.tot_power,i.kappa,i.dist)
+        #   #i.solver(omega)
     
     i = 1
     while np.abs(error) > stop_error:
@@ -256,7 +257,7 @@ def running_func():
         #a.edge_maker()
                     #i.solver(omega)
         one_iteration()
-        after = np.sum(a.points)+np.sum(b.points)+np.sum(c.points)
+        after = np.sum(a.points[1:-1,1:-1])+np.sum(b.points[1:-1,1:-1])+np.sum(c.points[1:-1,1:-1])
         error = (after-before)/before
         #print(error)
 
@@ -292,5 +293,4 @@ pl.figure(1)
 heatmap = pl.imshow(output)
 pl.show()
 pl.imsave('heatmap.png',output)
-
 

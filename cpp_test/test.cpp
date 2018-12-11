@@ -1,53 +1,19 @@
 #include <iostream>
 #include <fstream>
 #include <math.h>
+#include <cmath>
+#include <ctime>
+#include <iomanip>
 
 #include <vector>
 
 #include "block.h"
 #include "type_class.h"
 
-/*class block 
-{
-	public:
-		block(int in_width,int in_height,float in_kappa,float in_tot_power,float in_dist);
-		std::vector <std::vector<float> > points;
-		std::vector <type_class> top_type;
-		int width;
-		int height;
-		float kappa;
-		float tot_power;
-		float dist;
 
-
-
-
-};
-
-block::block(int in_width,int in_height,float in_kappa,float in_tot_power,float in_dist)
-{
-	width = in_width+2; //1 layer round edge to hold imaginary points
-	height= in_height+2;
-	points.resize(width,std::vector<float>(height));
-	for(int i=0;i<width;i++)
-	{
-		for(int j=0;j<height;j++)
-		{
-			points[i][j] = 30.0;
-			std::cout << points[i][j] << '\n';
-		}
-	}
-}
-
-class type_class
-{
-	public:
-		block* block_reference;
-		int position;
-};
-*/
 int main()
 {
+	std::cout << std::setprecision (17);
 	/*
 	std::cout << "Hello world!";
 	float test_array [5][2];
@@ -60,10 +26,10 @@ int main()
 */
 	
 
-	float multiple = 3;
-	float dist = (1/multiple)*pow(10,-3);
-	std::cout <<"\n hi \n" << dist << "\n ho \n";
-	float p = 0.5*pow(10,9);
+	std::cout << "bill";
+	double multiple = 3;
+	double dist = (1/multiple)*pow(10,-3);
+	double p = 0.5*pow(10,9);
 	
 	int height_a =multiple;
 	int width_a = multiple*14;
@@ -72,8 +38,8 @@ int main()
 	
 	int wfmm = 1;
 	int hfmm = 30;
-	int sfmm = 10;
-	int number_f = 3;
+	int sfmm = 8;
+	int number_f = 5;
 	
 	int width_f = wfmm*multiple;
 	int height_f = hfmm*multiple;
@@ -81,73 +47,149 @@ int main()
 
 	int height_c = multiple*4;
 	int width_c = (width_f * number_f) + (seperation_f*(number_f-1));
+
+
+	std::vector <block*> block_vector;
+	block_vector.resize(3+number_f);
 	
-	//std::cout << "\n" << width_c;
-	//std::cout << "\n" << width_b;
 	if(width_c<width_b)
 	{
 		std::cout << "width_c less than width_b";
 		return 1;
 	}	
-	block *a = new block(width_a,height_a,150,0,dist);
-	//block *b = new block(width_b,height_b,240,0,dist);
-	//block *c = new block(width_c,height_c,248,0,dist);
+	block *a = new block(width_a,height_a,150,p,dist);
+	block *b = new block(width_b,height_b,240,0,dist);
+	block *c = new block(width_c,height_c,248,0,dist);
 
-	//std::vector <block*> fins_vector;
-	//fins_vector.resize(number_f);
-	//for(int i=0;i<number_f;i++)
-	//{
-	//	block *d = new block(width_f,height_f,248,0,dist);
-	//	fins_vector[i] = d;
-	//}
+	std::cout << "bob";
+	block_vector[0] = a;
+	block_vector[1] = b;
+	block_vector[2] = c;
+
+	std::vector <block*> fins_vector;
+	fins_vector.resize(number_f);
+	for(int i=0;i<number_f;i++)
+	{
+		block *d = new block(width_f,height_f,248,0,dist);
+		block_vector[3+i] = d;
+		fins_vector[i] = d;
+	}
 	/*block a(28,2,150,1e-9,1e-3);;
 	block b(30,2,240,1,1);;
 	block c(32,3,248,1,1);;
 */
-	//a->type_change(b,true,int((width_b-width_a)/2)+1,int((width_b+width_a)/2)-2,1,width_a-2);
-/*	b->type_change(a,0,1,width_a-2,int((width_b-width_a)/2)+1,int((width_b+width_a)/2)-2);
+	a->type_change(b,true,int((width_b-width_a)/2)+1,int((width_b+width_a)/2)-2,1,width_a);
+	b->type_change(a,0,1,width_a,int((width_b-width_a)/2)+1,int((width_b+width_a)/2));
 	
-	b->type_change(c,1,int((width_c-width_b)/2)+1,int((width_c+width_b)/2)-2,1,width_b-2);
-	c->type_change(b,0,1,width_b-2,int((width_c-width_b)/2)+1,int((width_c+width_b)/2)-2);
+	b->type_change(c,1,int((width_c-width_b)/2)+1,int((width_c+width_b)/2)-2,1,width_b);
+	c->type_change(b,0,1,width_b,int((width_c-width_b)/2)+1,int((width_c+width_b)/2));
 	for(int i = 0; i<number_f;i++)
 	{
-	    fins_vector[i]->type_change(c,0,(width_f+seperation_f)*i,((width_f+seperation_f)*i)+width_f-1,1,width_f-2);
-	    c->type_change(fins_vector[i],1,1,width_f,(width_f+seperation_f)*i,(width_f+seperation_f)*(i)+width_f-1);
+	    	fins_vector[i]->type_change(c,0,(width_f+seperation_f)*i,((width_f+seperation_f)*i)+width_f-1,1,width_f-2);
+	   c->type_change(fins_vector[i],1,1,width_f,(width_f+seperation_f)*i+1,(width_f+seperation_f)*(i)+width_f-1);
 	}
 
-*/
 
-	/*
-	a->type_change(b,1,0,28,1,29);
-	b->type_change(a,0,0,28,1,29);
 
-	b->type_change(c,1,0,28,1,29);
-	c->type_change(b,0,0,28,1,29);
-	*/
+	
+	//a->type_change(b,1,0,28,1,29);
+	//b->type_change(a,0,0,28,1,29);
 
-	for(int i = 0;i<20000;i++)
+	//b->type_change(c,1,0,28,1,29);
+	//c->type_change(b,0,0,28,1,29);
+	
+	double stop_error = 5.0/pow(10,8);
+	stop_error = (1e-7/4014)*((height_a*width_a)+(height_b*width_b)+(height_c*width_c));
+	std::cout << stop_error;
+	double before = 10000000000;
+	long double after  = 10000000000;
+	double error = 1;
+
+	//for(int i = 0;i<1;i++)
+
+
+	std::cout << "here";
+	for(int i=0;i<0;i++)
 	{
+		//std::cout << a->points[4][1]<< "\n";
+		//std::cout << i<< "\n";
+		before = after;
 		a->edge_maker();
 		a->solver();
-		//b->edge_maker();
-		//b->solver();
-		//c->edge_maker();
-		//c->solver();
-		//for(int j=0;j<number_f;j++)
-		//{
-		//	fins_vector[j]->edge_maker();
-		//	fins_vector[j]->solver();
-		//}
+		b->edge_maker();
+		b->solver();
+		std::cout << a->points[1][1]<< "\n";
+		std::cout << a->points[1][0]<< "\n";
+		std::cout << i<< "\n";
+		c->edge_maker();
+		c->solver();
+		for(int j=0;j<number_f;j++)
+		{
+			fins_vector[j]->edge_maker();
+			fins_vector[j]->solver();
+		}
 	}
 
-	//a->edge_maker();
-	/*(std::cout << '\n' << b.height << '\n';;
-	std::cout << '\n' << "hello" << '\n';;
-	//std::cout << b.points[1][2]<<'\n';;
-	std::cout << b.points[0][0]<<'\n';;
-//	std::cout << b.top_type[0].block_reference<<'\n';;
-*/	
-	
+
+
+
+	int console_count = 0;
+	std::clock_t start;
+	start = std::clock();
+	while(std::abs(error) > stop_error)
+	//for(int i=0;i<10;i++)
+	{
+		if(console_count > 1000)
+		{
+			console_count = 0;
+			std::cout << error << "\n";
+		}
+		console_count +=1;
+		before = after;
+		a->edge_maker();
+		a->solver();
+		b->edge_maker();
+		b->solver();
+		c->edge_maker();
+		c->solver();
+		for(int j=0;j<number_f;j++)
+		{
+			fins_vector[j]->edge_maker();
+			fins_vector[j]->solver();
+		}
+
+
+		after=0;
+		//for(int i=0;i<block_vector.size();i++)
+		for(int i=0;i<2;i++)
+		{
+			for(int j=1;j<block_vector[i]->height-1;j++)
+			{
+				for(int k=1;k<block_vector[i]->width-1;k++)
+				{
+					after += block_vector[i]->points[j][k];
+					//sum += a->points[j][k];
+				}
+			}
+		}
+		error = std::abs(after-before)/before;
+	}
+
+	std::cout << "Time: " << ((std::clock() - start)/(double)(CLOCKS_PER_SEC/1000))/1000 << " s" << "\n";
+		
+	double max = 0;
+	for(int i=1;i<a->height-1;i++)
+	{
+		for(int j=1;j<a->width-1;j++)
+		{
+			if(a->points[i][j] > max)
+			{
+				max = a->points[i][j];
+			}
+		}
+	}
+	std::cout << "\n" <<"max a " << max << "\n";
+	std::cout << "\n" << a->points[0][1];
 	std::ofstream myfile;
 	myfile.open("a.csv");
 	for(int i = 0;i<height_a+2;i++)
@@ -160,6 +202,36 @@ int main()
 	}
 	myfile.close();
 	
+	std::ofstream myfileb;
+	myfileb.open("b.csv");
+	for(int i = 0;i<height_b+2;i++)
+	{
+		for(int j=0;j<width_b+2;j++)
+		{
+			myfileb << b->points[i][j] <<",";
+		}
+		myfileb<< '\n';
+	}
+	myfileb.close();
+
+	std::ofstream myfilec;
+	myfilec.open("c.csv");
+	for(int i = 0;i<height_c+2;i++)
+	{
+		for(int j=0;j<width_c+2;j++)
+		{
+			myfilec << c->points[i][j] <<",";
+		}
+		myfilec<< '\n';
+	}
+	myfilec.close();
+	
+	long double kappa = 150;
+	long double Ta = 20;
+	//std::cout << a->points[1,2] - 2*dist*1.31*pow(a->points[1,1]-Ta,4/3)/kappa;
+	//std::cout << "\n" <<"hehehehe" <<  a->points[1][2]- 2*dist*1.31*pow(a->points[1][1]-Ta,4.0/3)/kappa << "\n" ;
+	//std::cout << "\n" <<"hehehehe" <<  pow((a->points[1][1]-Ta),4.0/3) << "\n" ;
+	//std::cout << "\n" <<"hehehehe" <<  a->points[1][1]-Ta << "\n" ;
 	return 0;
 }
 

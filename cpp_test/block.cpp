@@ -1,4 +1,6 @@
 #include <math.h>
+//#include <iostream>
+#include <cmath>
 
 #include "block.h"
 #include "type_class.h"
@@ -23,11 +25,11 @@ class block
 
 };
 */
-block::block(int in_width,int in_height,float in_kappa,float in_tot_power,float in_dist)
+block::block(int in_width,int in_height,long double in_kappa,long double in_tot_power,long double in_dist)
 {
 	width = in_width+2; //1 layer round edge to hold imaginary points
 	height= in_height+2;
-	points.resize(height,std::vector<float>(width));
+	points.resize(height,std::vector<long double>(width));
 	kappa = in_kappa;
 	tot_power = in_tot_power;
 	dist = in_dist;
@@ -79,20 +81,20 @@ void block::type_change(block* connected_block,bool top_bot,int block_start_inde
 	
 	if(top_bot == true)
 	{
-		int i = points_end-points_start;
+		int i = points_end-points_start+1;
 		for(int j = 0;j<i;j++)
 		{
-			top_type[j+points_start]->block_reference = connected_block;
-			top_type[j+points_start]->position = block_start_index+i;
+			top_type[j+points_start-1]->block_reference = connected_block;
+			top_type[j+points_start-1]->position = block_start_index+j;
 		}
 	}
 	else
 	{
-		int i = points_end-points_start;
+		int i = points_end-points_start+1;
 		for(int j = 0;j<i;j++)
 		{
-			bot_type[j+points_start]->block_reference = connected_block;
-			bot_type[j+points_start]->position = block_start_index+i;
+			bot_type[j+points_start-1]->block_reference = connected_block;
+			bot_type[j+points_start-1]->position = block_start_index+j;
 		}
 	}
 
@@ -107,8 +109,8 @@ void block::solver()
 	{
 		for(int j=1;j<width-1;j++)
 		{
-			points[i][j] = points[i][j]*(1-omega) + omega*0.25*(points[i-1][j]+points[i+1][j]+points[i][j+1]+points[i][j-1]+dist*dist*tot_power/kappa);
-			points[i][j] = points[i][j]*(1-omega) +omega*0.25*(points[i-1][j]+points[i+1][j]+points[i][j+1]+points[i][j-1]+dist*dist*tot_power/kappa);
+			points[i][j] = points[i][j]*(1-omega) + omega*0.25*(points[i-1][j]+points[i+1][j]+points[i][j+1]+points[i][j-1]+(dist*dist*tot_power/kappa));
+			//points[i][j] = points[i][j]*(1-omega) +omega*0.25*(points[i-1][j]+points[i+1][j]+points[i][j+1]+points[i][j-1]+dist*dist*tot_power/kappa);
 
 			//std::cout << points[i][j];
 		}
@@ -121,8 +123,8 @@ void block::edge_maker()
 {
 	for(int i=1;i<height-1;i++)
 	{
-		points[i][0] = points[i][2] - 2*dist*1.31*pow((points[i][1] - Ta),4/3)/kappa;
-		points[i][width-1] = points[i][width-3] - 2*dist*1.31*pow((points[i][width-2] - Ta),4/3)/kappa;
+		points[i][0] = points[i][2] - 2*dist*1.31*pow(std::abs((points[i][1] - Ta)),4.0/3.0)/kappa;
+		points[i][width-1] = points[i][width-3] - 2*dist*1.31*pow(std::abs((points[i][width-2] - Ta)),4.0/3)/kappa;
 		//std::cout << points[width-1][j];
 	}
 	for(int j=1;j<width-1;j++)
