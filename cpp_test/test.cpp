@@ -36,10 +36,10 @@ int main()
 	int height_b = multiple*2;
 	int width_b = multiple*20;
 	
-	int wfmm = 2;
+	int wfmm = 1;
 	int hfmm = 30;
-	int sfmm = 8;
-	int number_f = 5;
+	int sfmm = 2;
+	int number_f = 25;
 	
 	int width_f = wfmm*multiple;
 	int height_f = hfmm*multiple;
@@ -99,8 +99,8 @@ int main()
 	//c->type_change(b,0,0,28,1,29);
 	
 	double stop_error = 5.0/pow(10,8);
-	stop_error = 1e-5;
-	//stop_error = (1e-7/4014)*((height_a*width_a)+(height_b*width_b)+(height_c*width_c));
+	stop_error = 1e-8;
+	stop_error = (1e-7/4014)*((height_a*width_a)+(height_b*width_b)+(height_c*width_c));
 	//stop_error = (1e-7/1e2)*(height_a*width_a);
 	std::cout << stop_error;
 	double before = 10000000000;
@@ -110,25 +110,22 @@ int main()
 	//for(int i = 0;i<1;i++)
 
 	int count_2 =0;
-	for(int i=0;i<100000;i++)
+	for(int i=0;i<1000;i++)
 	{
 		count_2 +=1;
 		//std::cout << a->points[4][1]<< "\n";
 		std::cout << i<< "\n";
 		before = after;
 		a->edge_maker();
-		a->solver();
+		a->sor();
 		b->edge_maker();
-		b->solver();
-		std::cout << a->points[1][1]<< "\n";
-		std::cout << a->points[1][0]<< "\n";
-		std::cout << i<< "\n";
+		b->sor();
 		c->edge_maker();
-		c->solver();
+		c->sor();
 		for(int j=0;j<fins_vector.size();j++)
 		{
 			fins_vector[j]->edge_maker();
-			fins_vector[j]->solver();
+			fins_vector[j]->sor();
 		}
 	}
 
@@ -139,8 +136,8 @@ int main()
 	std::clock_t start;
 	start = std::clock();
 	int the_count = 0;
-	//while(std::abs(error) > stop_error)
-	for(int i=0;i<0;i++)
+	while(std::abs(error) > stop_error)
+	//for(int i=0;i<0;i++)
 	{
 		the_count +=1;
 		if(console_count > 1000)
@@ -151,15 +148,15 @@ int main()
 		console_count +=1;
 		before = after;
 		a->edge_maker();
-		a->solver();
+		a->sor();
 		b->edge_maker();
-		b->solver();
+		b->sor();
 		c->edge_maker();
-		c->solver();
+		c->sor();
 		for(int j=0;j<number_f;j++)
 		{
 			fins_vector[j]->edge_maker();
-			fins_vector[j]->solver();
+			fins_vector[j]->sor();
 		}
 
 
@@ -206,7 +203,7 @@ int main()
 	std::cout << "\n" <<"max a " << max << "\n";
 	std::cout << "\n" << a->points[0][1];
 	std::ofstream myfile;
-	myfile.open("a.csv");
+	myfile.open("acpp.csv");
 	for(int i = 0;i<height_a+2;i++)
 	{
 		for(int j=0;j<width_a+2;j++)
@@ -218,7 +215,7 @@ int main()
 	myfile.close();
 	
 	std::ofstream myfileb;
-	myfileb.open("b.csv");
+	myfileb.open("bcpp.csv");
 	for(int i = 0;i<height_b+2;i++)
 	{
 		for(int j=0;j<width_b+2;j++)
@@ -230,7 +227,7 @@ int main()
 	myfileb.close();
 
 	std::ofstream myfilec;
-	myfilec.open("c.csv");
+	myfilec.open("ccpp.csv");
 	for(int i = 0;i<height_c+2;i++)
 	{
 		for(int j=0;j<width_c+2;j++)
@@ -242,7 +239,7 @@ int main()
 	myfilec.close();
 
 	std::ofstream myfilef1;
-	myfilef1.open("f1.csv");
+	myfilef1.open("f1cpp.csv");
 	for(int i = 0;i<height_f+2;i++)
 	{
 		for(int j=0;j<width_f+2;j++)
@@ -254,7 +251,7 @@ int main()
 	myfilef1.close();
 
 	std::ofstream myfilef2;
-	myfilef2.open("f2.csv");
+	myfilef2.open("f2cpp.csv");
 	for(int i = 0;i<height_f+2;i++)
 	{
 		for(int j=0;j<width_f+2;j++)

@@ -8,7 +8,7 @@ class type_class;
 
 class block 
 {
-	static const long double omega = 1.2;
+	static const long double omega = 1;
 	static const long double Ta  = 20;
 	//float omega = 1.75;
 	public:
@@ -22,7 +22,8 @@ class block
 		long double tot_power;
 		long double dist;
 		void type_change(block* connected_block,bool top_bot,int block_start_index,int block_end_index,int points_start,int points_end);
-		void solver();
+		void jacobi();
+		void sor();
 		void edge_maker();
 
 		//float omega = 1.75;

@@ -18,16 +18,18 @@ np.set_printoptions(precision = 5,suppress = True)
 print(numba.__version__)
 
 Ta = 20
-omega = 1.2
+omega = 1
 
-@jit(nopython = True)
+#@jit(nopython = True)
 def solver(input_array,tot_power,kappa,dist):
     m = input_array.shape[0]
     n = input_array.shape[1]
+    test = np.empty((m,n))
     for i in range(1,m-1):
         for j in range(1,n-1):
-            input_array[i][j] = input_array[i][j]*(1-omega) + omega*0.25*(input_array[i-1][j]+input_array[i+1][j]+input_array[i][j+1]+input_array[i][j-1]+dist**2*tot_power*(1/kappa))
- 
+            test[i][j] = input_array[i][j]*(1-omega) + omega*0.25*(input_array[i-1][j]+input_array[i+1][j]+input_array[i][j+1]+input_array[i][j-1]+dist**2*tot_power*(1/kappa))
+            #input_array[i,j] = input_array[i,j]*(1-omega) + omega*0.25*(input_array[i-1,j]+input_array[i+1,j]+input_array[i,j+1]+input_array[i,j-1]+dist**2*tot_power*(1/kappa))
+    return test
 @jit(nopython=True)
 def edge_maker(points,m,n,dist,kappa,top_type,bot_type,list_of_edges_top,list_of_edges_bot):
     #print(list_of_edges)
@@ -37,9 +39,9 @@ def edge_maker(points,m,n,dist,kappa,top_type,bot_type,list_of_edges_top,list_of
     points[1:m-1,n-1] = points[1:m-1,n-3] - 2*dist* 1.31 * (np.abs(points[1:m-1,n-2]-Ta))**(4/3)/kappa   
 
 
-    points[0,1:n-1] = [points[2,a] - 2*dist*1.31*(np.abs(points[1,a]-Ta))**(4/3)/kappa if  top_type[0,a] == 0 else  list_of_edges_bot[int(top_type[0][a])-1][int(top_type[1][a])] for a in range(1,n-1)]
+    points[0,1:n-1] = [points[2,a] - 2*dist*1.31*(np.abs(points[1,a]-Ta))**(4/3)/kappa if  top_type[0,a] == 0 else  list_of_edges_bot[int(top_type[0,a])-1][int(top_type[1,a])] for a in range(1,n-1)]
 
-    points[m-1,1:n-1] = [points[m-3,a] - 2*dist*1.31*(np.abs(points[m-2,a]-Ta))**(4/3)/kappa if bot_type[0,a] == 0 else list_of_edges_top[int(bot_type[0][a])-1][int(bot_type[1][a])] for a in range(1,n-1)]
+    points[m-1,1:n-1] = [points[m-3,a] - 2*dist*1.31*(np.abs(points[m-2,a]-Ta))**(4/3)/kappa if bot_type[0,a] == 0 else list_of_edges_top[int(bot_type[0,a])-1][int(bot_type[1,a])] for a in range(1,n-1)]
 
 #    points[0,1:n-1] = [points[2,a] - 2*dist*1.31*(np.abs(points[1,a]-Ta))**(4/3)/kappa  for a in range(1,n-1)]
 #
@@ -204,24 +206,32 @@ start = time.time()
 print("starting computing")
 
 def one_iteration():
-    edge_maker(a.points,a.m,a.n,a.dist,a.kappa,a.top_type,a.bot_type,([x.points[1,:]for x in a.other_blocks[1:]]),([x.points[-2,:]for x in a.other_blocks[1:]]))
+#    edge_maker(a.points,a.m,a.n,a.dist,a.kappa,a.top_type,a.bot_type,[x.points[1,:]for x in a.other_blocks[1:]],([x.points[-2,:]for x in a.other_blocks[1:]]))
+    edge_maker(a.points,a.m,a.n,a.dist,a.kappa,a.top_type,a.bot_type,([x.points[-2,:]for x in a.other_blocks[1:]]),[x.points[1,:]for x in a.other_blocks[1:]])
 #    edge_maker(a.points,a.m,a.n,a.dist,a.kappa,a.top_type,a.bot_type,[0],[0])
     
-    solver(a.points,a.tot_power,a.kappa,a.dist)
+    a.points = solver(a.points,a.tot_power,a.kappa,a.dist)
+#    solver(a.points,a.tot_power,a.kappa,a.dist)
 
     edge_maker(b.points,b.m,b.n,b.dist,b.kappa,b.top_type,b.bot_type,([x.points[1,:]for x in b.other_blocks[1:]]),([x.points[-2,:]for x in b.other_blocks[1:]]))
-    solver(b.points,b.tot_power,b.kappa,b.dist)
+#    edge_maker(b.points,b.m,b.n,b.dist,b.kappa,b.top_type,b.bot_type,([x.points[-2,:]for x in b.other_blocks[1:]]),([x.points[1,:]for x in b.other_blocks[1:]]))
+#    solver(b.points,b.tot_power,b.kappa,b.dist)
+    b.points = solver(b.points,b.tot_power,b.kappa,b.dist)
         #b.solver(omega)
         
         #c.edge_maker()
     edge_maker(c.points,c.m,c.n,c.dist,c.kappa,c.top_type,c.bot_type,([x.points[1,:]for x in c.other_blocks[1:]]),([x.points[-2,:]for x in c.other_blocks[1:]]))
-    solver(c.points,c.tot_power,c.kappa,c.dist)
+#    edge_maker(c.points,c.m,c.n,c.dist,c.kappa,c.top_type,c.bot_type,([x.points[-2,:]for x in c.other_blocks[1:]]),([x.points[1,:]for x in c.other_blocks[1:]]))
+#    solver(c.points,c.tot_power,c.kappa,c.dist)
+    c.points =solver(c.points,c.tot_power,c.kappa,c.dist)
         #c.solver(omega)
         
     for i in list_of_fins:
             #i.edge_maker()
         edge_maker(i.points,i.m,i.n,i.dist,i.kappa,i.top_type,i.bot_type,([x.points[1,:]for x in i.other_blocks[1:]]),([x.points[-2,:]for x in i.other_blocks[1:]]))
-        solver(i.points,i.tot_power,i.kappa,i.dist)
+#        edge_maker(i.points,i.m,i.n,i.dist,i.kappa,i.top_type,i.bot_type,([x.points[-2,:]for x in i.other_blocks[1:]]),([x.points[1,:]for x in i.other_blocks[1:]]))
+#        solver(i.points,i.tot_power,i.kappa,i.dist)
+        i.points = solver(i.points,i.tot_power,i.kappa,i.dist)
 
 
 
@@ -309,8 +319,14 @@ print(b.points.shape)
 print(c.points.shape)
 print(width_c)
 
+#edge_maker(a.points,a.m,a.n,a.dist,a.kappa,a.top_type,a.bot_type,([x.points[1,:]for x in a.other_blocks[1:]]),([x.points[-2,:]for x in a.other_blocks[1:]]))
+edge_maker(a.points,a.m,a.n,a.dist,a.kappa,a.bot_type,a.top_type,([x.points[-2,:]for x in a.other_blocks[1:]]),[x.points[1,:]for x in a.other_blocks[1:]])
+print(a.other_blocks[1].points[-2,:])
+
 np.savetxt("a.csv", a.points, delimiter=",")
 np.savetxt("b.csv", b.points, delimiter=",")
 np.savetxt("c.csv", c.points, delimiter=",")
 np.savetxt("f1.csv", list_of_fins[0].points, delimiter=",")
+np.savetxt("f2.csv", list_of_fins[1].points, delimiter=",")
+np.savetxt("f3.csv", list_of_fins[2].points, delimiter=",")
 

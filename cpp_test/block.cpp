@@ -103,7 +103,7 @@ void block::type_change(block* connected_block,bool top_bot,int block_start_inde
 }
 
 
-void block::solver()
+void block::sor()
 {
 	for(int i=1;i<height-1;i++)
 	{
@@ -115,6 +115,36 @@ void block::solver()
 			//std::cout << points[i][j];
 		}
 	}
+}
+
+void block::jacobi()
+{
+	std::vector <std::vector<long double> > test;
+	test.resize(height,std::vector<long double>(width));
+	for(int i=1;i<height-1;i++)
+	{
+		for(int j=1;j<width-1;j++)
+		{
+			
+			test[i][j] = points[i][j]*(1-omega) + omega*0.25*(points[i-1][j]+points[i+1][j]+points[i][j+1]+points[i][j-1]+(dist*dist*tot_power/kappa));
+			//points[i][j] = points[i][j]*(1-omega) +omega*0.25*(points[i-1][j]+points[i+1][j]+points[i][j+1]+points[i][j-1]+dist*dist*tot_power/kappa);
+
+			//std::cout << points[i][j];
+		}
+	}
+
+	for(int i=1;i<height-1;i++)
+	{
+		for(int j=1;j<width-1;j++)
+		{
+			points[i][j] = test[i][j];
+			//points[i][j] = points[i][j]*(1-omega) +omega*0.25*(points[i-1][j]+points[i+1][j]+points[i][j+1]+points[i][j-1]+dist*dist*tot_power/kappa);
+
+			//std::cout << points[i][j];
+		}
+	}
+
+
 }
 
 
