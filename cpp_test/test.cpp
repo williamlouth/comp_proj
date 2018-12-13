@@ -7,11 +7,11 @@
 
 #include <vector>
 
+#include "test.h"
 #include "block.h"
-#include "type_class.h"
 
 
-int main()
+int code_runner(int wfmm, int hfmm,int sfmm ,int number_f)
 {
 	std::cout << std::setprecision (17);
 	/*
@@ -36,10 +36,10 @@ int main()
 	int height_b = multiple*2;
 	int width_b = multiple*20;
 	
-	int wfmm = 1;
-	int hfmm = 30;
-	int sfmm = 2;
-	int number_f = 25;
+	//int wfmm = 1; //if wfmm * multiple is not even then the system is asymetric so dont expect a symetric result
+	//int hfmm = 30;
+	//int sfmm = 5;
+	//int number_f = 5;
 	
 	int width_f = wfmm*multiple;
 	int height_f = hfmm*multiple;
@@ -99,8 +99,8 @@ int main()
 	//c->type_change(b,0,0,28,1,29);
 	
 	double stop_error = 5.0/pow(10,8);
-	stop_error = 1e-8;
-	stop_error = (1e-7/4014)*((height_a*width_a)+(height_b*width_b)+(height_c*width_c));
+	stop_error = 5e-9;
+ 	//stop_error = (1e-7/4014)*((height_a*width_a)+(height_b*width_b)+(height_c*width_c));
 	//stop_error = (1e-7/1e2)*(height_a*width_a);
 	std::cout << stop_error;
 	double before = 10000000000;
@@ -200,8 +200,63 @@ int main()
 			}
 		}
 	}
+
+
+
+	int out_height =(height_a+height_b+height_c+height_f) ;
+	int out_width =width_c;
+	std::vector <std::vector<long double> > output_vector;
+	output_vector.resize(out_height,std::vector<long double>(out_width));
+
+	for(int i = 0;i<out_height;i++)
+	{
+		for(int j=0;j<out_width;j++)
+		{
+			output_vector[i][j] = 0;
+		}
+	}
+
+	for(int k=0;k<number_f;k++)
+	{
+		for(int i = 0;i<height_f;i++)
+		{
+			for(int j=0;j<width_f;j++)
+			{
+				output_vector[i][j+(k*(width_f+seperation_f))] = fins_vector[k]->points[i+1][j+1];
+			}
+		}
+	}
+
+	for(int i = 0;i<height_c;i++)
+	{
+		for(int j=0;j<out_width;j++)
+		{
+			output_vector[height_f+i][j] = c->points[i+1][j+1];
+		}
+	}
+
+
+	for(int i = 0;i<height_b;i++)
+	{
+		for(int j=0;j<width_b;j++)
+		{
+			output_vector[height_f+height_c+i][int((width_c-width_b)/2)+j] = b->points[i+1][j+1];
+		}
+	}
+
+	for(int i = 0;i<height_a;i++)
+	{
+		for(int j=0;j<width_a;j++)
+		{
+			output_vector[height_f+height_c+height_b+i][int((width_c-width_a)/2)+j] = a->points[i+1][j+1];
+		}
+	}
+
+
+
 	std::cout << "\n" <<"max a " << max << "\n";
 	std::cout << "\n" << a->points[0][1];
+
 	std::ofstream myfile;
 	myfile.open("acpp.csv");
 	for(int i = 0;i<height_a+2;i++)
@@ -262,6 +317,19 @@ int main()
 	}
 	myfilef2.close();
 	
+	std::ofstream myfilef3;
+	myfilef3.open("f3cpp.csv");
+	for(int i = 0;i<height_f+2;i++)
+	{
+		for(int j=0;j<width_f+2;j++)
+		{
+			myfilef3 << block_vector[5]->points[i][j] <<",";
+		}
+		myfilef3<< '\n';
+	}
+	myfilef3.close();
+	
+
 
 	//std::cout << a->points[1,2] - 2*dist*1.31*pow(a->points[1,1]-Ta,4/3)/kappa;
 	//std::cout << "\n" <<"hehehehe" <<  a->points[1][2]- 2*dist*1.31*pow(a->points[1][1]-Ta,4.0/3)/kappa << "\n" ;
@@ -280,6 +348,20 @@ int main()
 	//std::cout << "\n" << block_vector[3]->points[7][1];
 	std::cout << "\n" <<"count_2 " << count_2;
 
+	char name[20] = {0};
+	std::sprintf(name,"%d",number_f);
+	
+	std::ofstream out_file;
+	out_file.open(name);
+	for(int i = 0;i<out_height;i++)
+	{
+		for(int j=0;j<out_width;j++)
+		{
+			out_file << output_vector[i][j] <<",";
+		}
+		out_file<< '\n';
+	}
+	out_file.close();
 	return 0;
 }
 

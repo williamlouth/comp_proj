@@ -8,7 +8,7 @@ class type_class;
 
 class block 
 {
-	static const long double omega = 1;
+	static const long double omega = 1.2;
 	static const long double Ta  = 20;
 	//float omega = 1.75;
 	public:
